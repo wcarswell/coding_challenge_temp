@@ -40,6 +40,7 @@
     <script src="/public/admin/js/controllers/tax.js"></script>
     <script src="/public/admin/js/controllers/vendor.js"></script>
     <script src="/public/admin/js/controllers/low_stock.js"></script>
+    <script src="/public/admin/js/controllers/order_stock.js"></script>
     <!-- endbuild -->
   </body>
 </html>

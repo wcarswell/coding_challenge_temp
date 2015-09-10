@@ -42,6 +42,12 @@ angular
             parent: 'dashboard',
             templateUrl: '/public/admin/views/dashboard/admin.html'
           })
+          .state('order', {
+            url: '/order',
+            parent: 'dashboard',
+            templateUrl: '/public/admin/views/admin/order.html',
+            controller: 'OrdersCtrl'
+          })
           .state('countries', {
             url: '/countries',
             parent: 'dashboard',

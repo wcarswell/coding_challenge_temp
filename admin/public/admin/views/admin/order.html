@@ -1,0 +1,70 @@
+<alert type="danger" close="closeAlert()" ng-show="alerts.length > 0">
+    <span ng-repeat="alert in alerts">{{alert.msg}}<br /></span>
+</alert>
+
+<a ui-sref="admin" class="pull-right btn btn-primary btn-outline btn-rounded">Admin</a>
+
+<h2>Order Stock</h2>
+
+<div class="jumbotron">
+    <!-- Insert new clinic -->
+    <button class="pull-right btn btn-primary btn-outline btn-rounded" ng-click="new()">+</button>
+
+    <!-- Only show table if we received data -->
+    <table class="table table-striped" ng-show="orders.length > 0">
+        <tr>
+            <th>ID</th>
+            <th>Vendor</th>
+            <th>Total</th>
+            <th>Tax</th>
+            <th>Tax Percent</th>
+            <th>Paid</th>
+            <th>Received Goods</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+        <tr ng-repeat="order in orders track by $index">
+            <td>{{ order.stock_order_id }}</td>
+            <td>{{ order.vendor_name }}</td>
+            <td align="right">{{ order.total}}</td>
+            <td align="right">{{ order.tax}}</td>
+            <td align="right">{{ order.tax_percent}}%</td>
+            <td>
+                <span ng-show="order.is_paid=='y'">y</span><span ng-show="order.is_paid!='y'">n</span></td>
+            <td>
+                <span ng-show="order.items_received=='y'">y</span><span ng-show="order.items_received!='y'">n</span></td>
+            <td>{{ order.created_at}}</td>
+            <td>
+            <button class="btn btn-primary" ng-click="modify(order)" ng-show="order.items_received!='y'">Modify</button>
+            <button class="btn btn-danger" ng-click="delete(order)" ng-show="order.items_received!='y'">Delete</button></td>
+        </tr>
+    </table>
+
+    <!-- Template script to add/modify tax -->
+    <script type="text/ng-template" id="order.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{ action }}</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Vendor:</label>
+                <select ng-model="selected.vendor_id" ng-options="vendor.vendor_id as vendor.name for vendor in vendors">
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tax:</label>
+                <select ng-model="selected.tax_id" ng-options="t.tax_id as (t.currency+' - '+t.percent + '%') for t in tax">
+                </select>
+            </div>
+            <h3>Order Line</h3>
+            // <div class="form-group">
+            //     <label>Tax Percent</label>
+            //     <input type="text" ng-model="selected.percent" class="form-control">
+            // </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+</div> <!-- /.jumbotron -->

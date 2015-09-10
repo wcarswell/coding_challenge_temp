@@ -5,6 +5,7 @@ use App\Country;
 use App\Clinic;
 use App\Tax;
 use App\Vendor;
+use App\StockOrder;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -33,10 +34,46 @@ class AdminController extends Controller
             ->get();
     }
 
+    public function taxWithCurrencyList()
+    {
+        return DB::table('tax')
+            ->join('country', 'country.country_id', '=', 'tax.country_id')
+            ->select('tax.*', 'country.name as country_name', 'country.currency')
+            ->get();
+    }
+
     public function vendorList()
     {
         // Return all countries alphabetically
         return Vendor::orderBy('name', 'asc')->get();
+    }
+
+    public function stockList()
+    {
+        // Return all stock_orders
+        $stockOrder = new StockOrder();
+        return $stockOrder->scopeAll();
+    }
+
+    public function addOrder(Request $request)
+    {
+        // Fetch Posted country variables
+        $order = $request->input('order');
+
+        // Initialise country object
+        $stockOrder = new StockOrder(
+            array(
+                'vendor_id' => $order['vendor_id'],
+                'tax_id' => $order['tax_id']
+            )
+        );
+
+        // Save new country
+        $stockOrder->save();
+
+        $return = array(
+            'status' => 'succcess'
+        );
     }
 
     public function addCountry(Request $request)
@@ -431,6 +468,25 @@ class AdminController extends Controller
         
         // @Todo: save into temp table
         DB::table('vendor')->where('vendor_id', $vendor_id)->delete();
+
+        $return = array(
+            'status' => 'succcess'
+        );
+    }
+
+    public function deleteOrder($order_id) 
+    {
+        // Do we have a valid table key?
+        if(!is_numeric($order_id)) {
+            return response()->json(
+                array('status' => 'fail','message' => 'ID not numeric')
+            );
+        }
+        
+        // @Todo: save into temp table
+        DB::table('stock_order')->where('stock_order_id', $order_id)->delete();
+
+        // Clean Stock Order Line
 
         $return = array(
             'status' => 'succcess'

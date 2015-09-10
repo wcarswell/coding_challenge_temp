@@ -69,7 +69,7 @@ $app->delete('/admin/country/{country_id}', [
 
 $app->get('/admin/clinic', [
 	'middleware' => 'canManage',
-    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@cliniclist'
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@clinicList'
 ]);
 
 // Insert new clinic
@@ -92,6 +92,34 @@ $app->delete('/admin/clinic/{clinic_id}', [
 
 /*
 |--------------------------------------------------------------------------
+| Stock routes
+|--------------------------------------------------------------------------
+*/
+$app->get('/admin/orders', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@stockList'
+]);
+
+// Insert new order
+$app->post('/admin/orders', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@addOrder'
+]);
+
+// Modify tax
+$app->post('/admin/orders/{tax_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteOrder'
+]);
+
+// Delete tax
+$app->delete('/admin/orders/{tax_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteOrder'
+]);
+
+/*
+|--------------------------------------------------------------------------
 | Report routes
 |--------------------------------------------------------------------------
 */
@@ -105,6 +133,11 @@ $app->get('/reports/low_stock', [
 | Tax routes
 |--------------------------------------------------------------------------
 */
+$app->get('/admin/tax_with_currency', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@taxWithCurrencyList'
+]);
+
 $app->get('/admin/tax', [
     'middleware' => 'canManage',
     'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@taxList'
