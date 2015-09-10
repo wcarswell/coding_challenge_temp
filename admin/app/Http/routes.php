@@ -130,6 +130,34 @@ $app->delete('/admin/tax/{tax_id}', [
 
 /*
 |--------------------------------------------------------------------------
+| Vendor routes
+|--------------------------------------------------------------------------
+*/
+$app->get('/admin/vendor', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@vendorList'
+]);
+
+// Insert new vendor
+$app->post('/admin/vendor', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@addVendor'
+]);
+
+// Modify vendor
+$app->post('/admin/vendor/{vendor_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@updateVendor'
+]);
+
+// Delete tax
+$app->delete('/admin/vendor/{vendor_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteVendor'
+]);
+
+/*
+|--------------------------------------------------------------------------
 | Invoice routes
 |--------------------------------------------------------------------------
 */

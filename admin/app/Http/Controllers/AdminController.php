@@ -4,6 +4,7 @@ use DB;
 use App\Country;
 use App\Clinic;
 use App\Tax;
+use App\Vendor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -30,6 +31,12 @@ class AdminController extends Controller
             ->join('country', 'country.country_id', '=', 'tax.country_id')
             ->select('tax.*', 'country.name as country_name')
             ->get();
+    }
+
+    public function vendorList()
+    {
+        // Return all countries alphabetically
+        return Vendor::orderBy('name', 'asc')->get();
     }
 
     public function addCountry(Request $request)
@@ -229,7 +236,7 @@ class AdminController extends Controller
         // Fetch Posted country variables
         $tax = $request->input('tax');
 
-        // Insert new clinic
+        // Insert new vendor
         if( !empty($tax['country_id']) && !empty($tax['percent']) ) {
             // Check if country name is unique
             if( Tax::where('country_id', $tax['country_id'])->count() > 0 ) {
@@ -316,6 +323,114 @@ class AdminController extends Controller
         
         // @Todo: save into temp table
         DB::table('tax')->where('tax_id', $tax_id)->delete();
+
+        $return = array(
+            'status' => 'succcess'
+        );
+    }
+
+    public function addVendor(Request $request)
+    {
+        // Fetch Posted vendor variables
+        $vendor = $request->input('vendor');
+
+        // Insert new vendor
+        if( !empty($vendor['name']) ) {
+            // Check if vendor name is unique
+            if( Vendor::where('name', $vendor['name'])->count() > 0 ) {
+                return response()->json(
+                    array('status' => 'fail','message' => 'Vendor exists')
+                );
+            }
+        
+            // Initialise country object
+            $vendor = new Vendor(
+                array(
+                    'name'        => $vendor['name'],
+                    'address'     => $vendor['address'],
+                    'phone'       => $vendor['phone'],
+                    'contact'     => $vendor['contact'],
+                    'fax'         => $vendor['fax'],
+                    'email'       => $vendor['email'],
+                    'notes'       => $vendor['notes']
+                )
+            );
+
+            // Save new country
+            $vendor->save();
+
+            $return = array(
+                'status' => 'succcess'
+            );
+        } else {
+            $return = array(
+                'status' => 'fail',
+                'message' => 'Name or Vendor ID value not set'
+            );
+        }
+
+        return response()->json($return);
+    }
+
+    public function updateVendor($vendor_id, Request $request) 
+    {   
+        // Do we have a valid table key?
+        if(!is_numeric($vendor_id)) {
+            return response()->json(
+                array('status' => 'fail','message' => 'ID not numeric')
+            );
+        }
+
+        // Fetch Posted country variables
+        $vendor = $request->input('vendor');
+
+        // // Check if country name is unique
+        // if( Vendor::where('name', $vendor['name'])->count() > 0 ) {
+        //     return response()->json(
+        //         array('status' => 'fail','message' => 'Vendor Setup exists')
+        //     );
+        // }
+
+        // Fetch Posted country variables
+        $vendor = $request->input('vendor');
+
+        // Modify entry
+        if( !empty($vendor['name'])) {
+            $data  = [
+                'name'        => $vendor['name'],
+                'address'     => $vendor['address'],
+                'phone'       => $vendor['phone'],
+                'contact'     => $vendor['contact'],
+                'fax'         => $vendor['fax'],
+                'email'       => $vendor['email'],
+                'notes'       => $vendor['notes']
+            ];
+
+            Vendor::where('vendor_id', $vendor['vendor_id'])
+                ->update($data);
+
+            $return = array(
+                'status' => 'succcess'
+            );
+        } else {
+            $return = array(
+                'status' => 'fail',
+                'message' => 'Name value not set'
+            );
+        }      
+    }
+
+    public function deleteVendor($vendor_id) 
+    {
+        // Do we have a valid table key?
+        if(!is_numeric($vendor_id)) {
+            return response()->json(
+                array('status' => 'fail','message' => 'ID not numeric')
+            );
+        }
+        
+        // @Todo: save into temp table
+        DB::table('vendor')->where('vendor_id', $vendor_id)->delete();
 
         $return = array(
             'status' => 'succcess'

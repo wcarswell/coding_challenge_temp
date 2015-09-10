@@ -60,6 +60,12 @@ angular
             templateUrl: '/public/admin/views/admin/tax.html',
             controller: 'TaxCtrl'
           })
+           .state('vendor', {
+            url: '/vendor',
+            parent: 'dashboard',
+            templateUrl: '/public/admin/views/admin/vendor.html',
+            controller: 'VendorCtrl'
+          })
           .state('invoices', {
             url: '/invoices',
             parent: 'dashboard',
