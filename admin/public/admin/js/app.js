@@ -54,6 +54,18 @@ angular
             templateUrl: '/public/admin/views/admin/clinics.html',
             controller: 'ClinicsCtrl'
           })
+           .state('tax', {
+            url: '/tax',
+            parent: 'dashboard',
+            templateUrl: '/public/admin/views/admin/tax.html',
+            controller: 'TaxCtrl'
+          })
+          .state('invoices', {
+            url: '/invoices',
+            parent: 'dashboard',
+            templateUrl: '/public/admin/views/invoices/list.html',
+            controller: 'InvoicesCtrl'
+          })
           .state('reports', {
             url: '/reports',
             parent: 'dashboard',

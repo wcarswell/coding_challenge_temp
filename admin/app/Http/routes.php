@@ -99,3 +99,41 @@ $app->get('/reports/product', [
 	'middleware' => 'canManage',
     'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@products'
 ]);
+
+/*
+|--------------------------------------------------------------------------
+| Tax routes
+|--------------------------------------------------------------------------
+*/
+$app->get('/admin/tax', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@taxList'
+]);
+
+// Insert new tax
+$app->post('/admin/tax', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@addTax'
+]);
+
+// Modify tax
+$app->post('/admin/tax/{tax_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@updateTax'
+]);
+
+// Delete tax
+$app->delete('/admin/tax/{tax_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteTax'
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Invoice routes
+|--------------------------------------------------------------------------
+*/
+$app->get('/admin/invoice', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\InvoiceController@invoiceList'
+]);

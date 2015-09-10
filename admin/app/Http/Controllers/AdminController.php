@@ -3,6 +3,7 @@
 use DB;
 use App\Country;
 use App\Clinic;
+use App\Tax;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -20,6 +21,14 @@ class AdminController extends Controller
         return DB::table('clinic')
             ->join('country', 'country.country_id', '=', 'clinic.country_id')
             ->select('clinic.*', 'country.name as country_name')
+            ->get();
+    }
+
+    public function taxList()
+    {   
+        return DB::table('tax')
+            ->join('country', 'country.country_id', '=', 'tax.country_id')
+            ->select('tax.*', 'country.name as country_name')
             ->get();
     }
 
@@ -209,6 +218,104 @@ class AdminController extends Controller
         
         // @Todo: save into temp table
         DB::table('clinic')->where('clinic_id', $clinic_id)->delete();
+
+        $return = array(
+            'status' => 'succcess'
+        );
+    }
+
+    public function addTax(Request $request)
+    {
+        // Fetch Posted country variables
+        $tax = $request->input('tax');
+
+        // Insert new clinic
+        if( !empty($tax['country_id']) && !empty($tax['percent']) ) {
+            // Check if country name is unique
+            if( Tax::where('country_id', $tax['country_id'])->count() > 0 ) {
+                return response()->json(
+                    array('status' => 'fail','message' => 'Tax Setup exists')
+                );
+            }
+        
+            // Initialise country object
+            $tax = new Tax(
+                array(
+                    'country_id'           => $tax['country_id'],
+                    'percent'              => $tax['percent'],
+                )
+            );
+
+            // Save new country
+            $tax->save();
+
+            $return = array(
+                'status' => 'succcess'
+            );
+        } else {
+            $return = array(
+                'status' => 'fail',
+                'message' => 'Name or Tax ID value not set'
+            );
+        }
+
+        return response()->json($return);
+    }
+
+    public function updateTax($tax_id, Request $request) 
+    {   
+        // Do we have a valid table key?
+        if(!is_numeric($tax_id)) {
+            return response()->json(
+                array('status' => 'fail','message' => 'ID not numeric')
+            );
+        }
+
+        // Fetch Posted country variables
+        $tax = $request->input('tax');
+
+        // Check if country name is unique
+        if( Tax::where('country_id', $tax['country_id'])->count() > 0 ) {
+            return response()->json(
+                array('status' => 'fail','message' => 'Tax Setup exists')
+            );
+        }
+
+        // Fetch Posted country variables
+        $tax = $request->input('tax');
+
+        // Modify entry
+        if( !empty($tax['percent']) && !empty($tax['country_id']) ) {
+            $data  = [
+                'country_id'        => $tax['country_id'],
+                'percent'           => $tax['percent']
+            ];
+
+            Tax::where('tax_id', $tax['tax_id'])
+                ->update($data);
+
+            $return = array(
+                'status' => 'succcess'
+            );
+        } else {
+            $return = array(
+                'status' => 'fail',
+                'message' => 'Name or Country value not set'
+            );
+        }      
+    }
+
+    public function deleteTax($tax_id) 
+    {
+        // Do we have a valid table key?
+        if(!is_numeric($tax_id)) {
+            return response()->json(
+                array('status' => 'fail','message' => 'ID not numeric')
+            );
+        }
+        
+        // @Todo: save into temp table
+        DB::table('tax')->where('tax_id', $tax_id)->delete();
 
         $return = array(
             'status' => 'succcess'
