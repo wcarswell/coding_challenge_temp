@@ -11,6 +11,23 @@
 |
 */
 
+// Middleware config to ensure only certain urls are allowed to be used
+$app->routeMiddleware([
+    'canManage' => 'App\Http\Middleware\AdminMiddleware'
+]);
+
+// Home controller to load dashboard
 $app->get('/', [
-    'as' => 'profile', 'uses' => 'App\Http\Controllers\VehicleController@test'
+    'as' => 'default', 'uses' => 'App\Http\Controllers\DashboardController@index'
+]);
+
+// Country controller
+$app->get('/admin/country', [
+	'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@countrylist'
+]);
+
+$app->post('/admin/country', [
+	'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@insertCountry'
 ]);

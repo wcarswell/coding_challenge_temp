@@ -11,12 +11,13 @@
 angular
   .module('yapp', [
     'ui.router',
-    'ngAnimate'
+    'ngAnimate',
+    'ui.bootstrap'
   ])
   .config(function($stateProvider, $urlRouterProvider) {
 
-    $urlRouterProvider.when('/dashboard', '/dashboard/overview');
-    $urlRouterProvider.otherwise('/login');
+    $urlRouterProvider.when('/dashboard', '/dashboard/admin');
+    $urlRouterProvider.otherwise('/dashboard/admin');
 
     $stateProvider
       .state('base', {
@@ -36,10 +37,16 @@ angular
           templateUrl: '/public/admin/views/dashboard.html',
           controller: 'DashboardCtrl'
         })
-          .state('overview', {
-            url: '/overview',
+          .state('admin', {
+            url: '/admin',
             parent: 'dashboard',
-            templateUrl: '/public/admin/views/dashboard/overview.html'
+            templateUrl: '/public/admin/views/dashboard/admin.html'
+          })
+          .state('countries', {
+            url: '/countries',
+            parent: 'dashboard',
+            templateUrl: '/public/admin/views/admin/countries.html',
+            controller: 'CountriesCtrl'
           })
           .state('reports', {
             url: '/reports',
