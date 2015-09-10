@@ -6,6 +6,8 @@ use App\Clinic;
 use App\Tax;
 use App\Vendor;
 use App\StockOrder;
+use App\StockOrderLine;
+use App\Product;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -55,10 +57,25 @@ class AdminController extends Controller
         return $stockOrder->scopeAll();
     }
 
+    public function productList()
+    {
+        // Return all product, sorted by 
+        $product = new Product;
+        return $product->scopeProductByClinic();
+    }
+
+    public function productByClinicID($clinic_id)
+    {
+        // Return all product, sorted by 
+        $product = new Product;
+        return $product->scopeProductByClinicID($clinic_id);
+    }
+
     public function addOrder(Request $request)
     {
         // Fetch Posted country variables
         $order = $request->input('order');
+        $orderLines = $request->input('orderlines');
 
         // Initialise country object
         $stockOrder = new StockOrder(
@@ -68,8 +85,24 @@ class AdminController extends Controller
             )
         );
 
-        // Save new country
+        // Save new stock order
         $stockOrder->save();
+
+        // Save OrderLines
+        if($orderLines) {
+            foreach($orderLines as $orderLine) {
+                $stockOrderLine = new StockOrderLine(
+                    array(
+                        'product_id'     => $orderLine['product_id'],
+                        'stock_order_id' => $stockOrder->stock_order_id,
+                        'quantity'       => $orderLine['quantity_on_hand']
+                    )
+                );
+
+                // Save new stock order line
+                $stockOrderLine->save();
+            }
+        }
 
         $return = array(
             'status' => 'succcess'

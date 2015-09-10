@@ -11,6 +11,31 @@ class Product extends Model {
     ];
 
     /**
+     * Scope a query to return all products sortec by clinic.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeProductByClinic()
+    {
+
+    }
+
+    /**
+     * Scope a query to return all products sortec by clinic.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeProductByClinicID($clinic_id)
+    {
+        return \DB::table('product')
+                    ->orderBy('name', 'asc')
+                    ->orderBy('quantity_on_hand', 'asc')
+                    ->where('clinic_id', '=', $clinic_id)
+                    ->select('product.*')
+                    ->get();
+    }
+
+    /**
      * Scope a query to only include low stock levels.
      *
      * @return \Illuminate\Database\Eloquent\Builder

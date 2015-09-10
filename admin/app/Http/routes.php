@@ -198,3 +198,18 @@ $app->get('/admin/invoice', [
     'middleware' => 'canManage',
     'as' => 'default', 'uses' => 'App\Http\Controllers\InvoiceController@invoiceList'
 ]);
+
+/*
+|--------------------------------------------------------------------------
+| Product routes
+|--------------------------------------------------------------------------
+*/
+$app->get('/admin/product', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@productList'
+]);
+
+$app->get('/admin/product_by_clinic_id/{clinic_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@productByClinicID'
+]);

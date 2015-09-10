@@ -19,7 +19,10 @@ angular.module('yapp')
         'controller': 'ModalOrdersCtrl',
         'endPoint': '/admin/orders/',
         'endPointVendor': '/admin/vendor/',
-        'endPointTax': '/admin/tax_with_currency/'
+        'endPointTax': '/admin/tax_with_currency/',
+        'endPointProduct': '/admin/tax_with_currency/',
+        'endPointClinic': '/admin/clinic',
+        'endPointClinicProduct': '/admin/product_by_clinic_id/'
     }
 
     // Store the selected model to update
@@ -49,7 +52,14 @@ angular.module('yapp')
             // Bind countries to return value    
             $scope.tax = data;
         });
-    } 
+    }
+
+    $scope.reloadClinicList = function() {
+        $http.get( $scope.config.endPointClinic ).success(function(data, status, headers, config) {
+            // Bind countries to return value    
+            $scope.clinics = data;
+        });
+    }  
 
     // // Brings up modal to modify clinic information
     // $scope.modify = function(clinic) {
@@ -110,6 +120,9 @@ angular.module('yapp')
                 },
                 tax: function() {
                     return $scope.tax;
+                },
+                clinic: function() {
+                    return $scope.clinics;
                 }
             }
         });
@@ -128,17 +141,20 @@ angular.module('yapp')
     $scope.reloadOrdersList();
     $scope.reloadVendorsList();
     $scope.reloadTaxList();
+    $scope.reloadClinicList();
 });
 
 angular.module('yapp')
-    .controller('ModalOrdersCtrl', function($scope, $modalInstance, $http, order, action, config, vendors, tax) {
+    .controller('ModalOrdersCtrl', function($scope, $modalInstance, $http, order, action, config, vendors, tax, clinic) {
 
     // Update action description
     $scope.action = action;
 
     // Set selected order to modal passed through
-    console.log(order);
     $scope.selected = order;
+
+    //
+    $scope.ordersLines = [];
 
     // Set countries to modal passed through
     $scope.vendors = vendors;
@@ -146,19 +162,45 @@ angular.module('yapp')
     // Set countries to modal passed through
     $scope.tax = tax;
 
+    // Event for Order Line manipulation
+    $scope.newOrderLine = function() 
+    {
+        $scope.ordersLines.push({'quantity_on_hand': 5, 'clinics': clinic});
+    }
+
+    // Event for removing order line
+    $scope.removeOrderLine = function(index, ordersLines)
+    {   
+        // remove the one by index
+        ordersLines.splice(index,1);
+    }
+
+    // Event for fetching available products for Clinic
+    $scope.getProductsByClinic = function(clinic_id, index, ordersLines)
+    {   
+        var url = config.endPointClinicProduct;
+        url += clinic_id + '/';
+
+        $http.get( url ).success(function(data, status, headers, config) {
+            // Bind products to return value    
+            $scope.ordersLines[index].products = data;
+        });
+    }
+
     // Event for inserting/updating a clinic
     $scope.ok = function() {
         var url = config.endPoint;
-        if (order.hasOwnProperty('order_id')) {
-            url += order.order_id + '/';
-        }
-
-        // Ajax call to post to clinic information
+        // if (order.hasOwnProperty('order_id')) {
+        //     url += order.order_id + '/';
+        // }
+        console.log( $scope.ordersLines);
+        // // Ajax call to post to clinic information
         $http({
             url: url,
             method: "POST",
             data: {
-                'order': $scope.selected
+                'order': $scope.selected,
+                'orderlines': $scope.ordersLines
             }
         })
         .then(function(response) {

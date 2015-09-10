@@ -56,11 +56,17 @@
                 <select ng-model="selected.tax_id" ng-options="t.tax_id as (t.currency+' - '+t.percent + '%') for t in tax">
                 </select>
             </div>
-            <h3>Order Line</h3>
-            // <div class="form-group">
-            //     <label>Tax Percent</label>
-            //     <input type="text" ng-model="selected.percent" class="form-control">
-            // </div>
+            <h3>Order Line <button class="btn btn-primary btn-outline btn-rounded" ng-click="newOrderLine()">+</button></h3>
+            <div class="order-line">
+                <p ng-repeat="orderline in ordersLines track by $index">
+                    <select ng-change="getProductsByClinic(orderline.clinic_id, $index, ordersLines)" ng-model="orderline.clinic_id" ng-options="clinic.clinic_id as clinic.name for clinic in orderline.clinics">
+                    </select>
+                    <select ng-show="orderline.products.length > 0" ng-model="orderline.product_id" ng-options="product.product_id as product.name+' ('+ product.quantity_on_hand + ')' for product in orderline.products">
+                    </select>
+                    <input type="text" ng-model="orderline.quantity_on_hand" value="">
+                    <button class="btn btn-danger btn-outline btn-rounded" ng-click="removeOrderLine($index, ordersLines)">X</button>
+                </p>
+            </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
