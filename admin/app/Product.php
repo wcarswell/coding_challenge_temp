@@ -18,7 +18,13 @@ class Product extends Model {
     public function scopeLowStock($quantity)
     {
         return \DB::table('product')
+                    ->orderBy('country_name', 'asc')
+                    ->orderBy('clinic_name', 'asc')
+                    ->orderBy('name', 'asc')
+                    ->join('clinic', 'clinic.clinic_id', '=', 'product.clinic_id')
+                    ->join('country', 'country.country_id', '=', 'clinic.country_id')
                     ->where('quantity_on_hand', '<', $quantity)
+                    ->select('product.*', 'clinic.name as clinic_name', 'country.name as country_name')
                     ->get();
     }
 }

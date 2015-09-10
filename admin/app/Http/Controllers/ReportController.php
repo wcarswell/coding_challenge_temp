@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class ReportController extends Controller 
 {
 	
-    public function products()
+    public function lowStock()
     {
 		// Return all countries alphabetically
         $product = new Product;

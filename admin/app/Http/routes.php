@@ -92,12 +92,12 @@ $app->delete('/admin/clinic/{clinic_id}', [
 
 /*
 |--------------------------------------------------------------------------
-| Product routes
+| Report routes
 |--------------------------------------------------------------------------
 */
-$app->get('/reports/product', [
+$app->get('/reports/low_stock', [
 	'middleware' => 'canManage',
-    'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@products'
+    'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@lowStock'
 ]);
 
 /*

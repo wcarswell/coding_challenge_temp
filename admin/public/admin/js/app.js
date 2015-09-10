@@ -77,14 +77,12 @@ angular
             parent: 'dashboard',
             templateUrl: '/public/admin/views/dashboard/reports.html'
           })
-          .state('product', {
-            url: '/product',
+          .state('low_stock', {
+            url: '/low_stock',
             parent: 'dashboard',
-            templateUrl: '/public/admin/views/reports/product.html',
-            controller: 'ProductsCtrl'
+            templateUrl: '/public/admin/views/reports/low_stock.html',
+            controller: 'LowStockCtrl'
           })
-
-          
           .state('branch', {
             url: '/branch',
             parent: 'dashboard',

@@ -1,0 +1,24 @@
+<!-- <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert> -->
+<a ui-sref="admin" class="pull-right btn btn-primary btn-outline btn-rounded">Admin</a>
+
+<h2>Stock Levels</h2>
+
+<div class="jumbotron">
+    <!-- Only show table if we received data -->
+    <table class="table table-striped" ng-show="products.length > 0">
+        <tr>
+            <th>Country</th>
+            <th>Clinic</th>
+            <th>Type</th>
+            <th>Name</th>
+            <th>#</th>
+        </tr>
+        <tr ng-repeat="product in products track by $index">
+            <td>{{product.country_name}}</td>
+            <td>{{product.clinic_name}}</td>
+            <td>{{product.type}}</td>
+            <td>{{product.name}}</td>
+            <td><span class="label" ng-class="{'label-warning':product.quantity_on_hand==3,'label-danger':product.quantity_on_hand<2,'label-default':product.quantity_on_hand>3}">{{product.quantity_on_hand}}</span></td>
+        </tr>
+    </table>
+</div> <!-- /.jumbotron -->
