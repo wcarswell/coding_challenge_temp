@@ -112,4 +112,106 @@ class AdminController extends Controller
             'status' => 'succcess'
         );
     }
+
+    public function addClinic(Request $request)
+    {
+        // Fetch Posted country variables
+        $clinic = $request->input('clinic');
+
+        // Insert new clinic
+        if( !empty($clinic['name']) && !empty($clinic['country_id']) ) {
+            // Check if country name is unique
+            if( Clinic::where('name', $clinic['name'])->count() > 0 ) {
+                return response()->json(
+                    array('status' => 'fail','message' => 'Clinic exists')
+                );
+            }
+        
+            // Initialise country object
+            $clinic = new Clinic(
+                array(
+					'name' 				=> $clinic['name'],
+					'street' 			=> $clinic['street'],
+					'city' 				=> $clinic['city'],
+					'province'  		=> $clinic['province'],
+					'post_code' 		=> $clinic['post_code'],
+					'telephone_number' 	=> $clinic['telephone_number'],
+					'fax_number'		=> $clinic['fax_number'],
+					'clinic_number'     => $clinic['clinic_number'],
+					'country_id'		=> $clinic['country_id']
+                )
+            );
+
+            // Save new country
+            $clinic->save();
+
+            $return = array(
+                'status' => 'succcess'
+            );
+        } else {
+            $return = array(
+                'status' => 'fail',
+                'message' => 'Name or Crountry_ID value not set'
+            );
+        }
+
+        return response()->json($return);
+    }
+
+    public function updateClinic($clinic_id, Request $request) 
+    {   
+        // Do we have a valid table key?
+        if(!is_numeric($clinic_id)) {
+            return response()->json(
+                array('status' => 'fail','message' => 'ID not numeric')
+            );
+        }
+
+        // Fetch Posted country variables
+        $clinic = $request->input('clinic');
+
+        // Modify entry
+        if( !empty($clinic['name']) && !empty($clinic['country_id']) ) {
+            $data  = [
+                'name' 				=> $clinic['name'],
+                'street' 			=> $clinic['street'],
+				'city' 				=> $clinic['city'],
+				'province'  		=> $clinic['province'],
+				'post_code' 		=> $clinic['post_code'],
+				'telephone_number' 	=> $clinic['telephone_number'],
+				'fax_number'		=> $clinic['fax_number'],
+				'clinic_number'     => $clinic['clinic_number'],
+				'country_id'		=> $clinic['country_id']
+            ];
+
+            Clinic::where('clinic_id', $clinic['clinic_id'])
+                ->update($data);
+
+            $return = array(
+                'status' => 'succcess'
+            );
+        } else {
+            $return = array(
+                'status' => 'fail',
+                'message' => 'Name or Country value not set'
+            );
+        }      
+    }
+
+    public function deleteClinic($clinic_id) 
+    {
+        // Do we have a valid table key?
+        if(!is_numeric($clinic_id)) {
+            return response()->json(
+                array('status' => 'fail','message' => 'ID not numeric')
+            );
+        }
+        
+        // @Todo: save into temp table
+        DB::table('clinic')->where('clinic_id', $clinic_id)->delete();
+
+        $return = array(
+            'status' => 'succcess'
+        );
+    }
 }

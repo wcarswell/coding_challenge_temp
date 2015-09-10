@@ -72,6 +72,24 @@ $app->get('/admin/clinic', [
     'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@cliniclist'
 ]);
 
+// Insert new clinic
+$app->post('/admin/clinic', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@addClinic'
+]);
+
+// Modify clinic
+$app->post('/admin/clinic/{clinic_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@updateClinic'
+]);
+
+// Delete clinic
+$app->delete('/admin/clinic/{clinic_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteClinic'
+]);
+
 /*
 |--------------------------------------------------------------------------
 | Product routes

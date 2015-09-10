@@ -2,95 +2,166 @@
 
 /**
  * @ngdoc function
- * @name yapp.controller:MainCtrl
+ * @name yapp.controller:CountriesCtrl
  * @description
- * # MainCtrl
+ * # CountriesCtrl
  * Controller of yapp
  */
 angular.module('yapp')
-  .controller('ClinicsCtrl', function($scope, $state, $http, $modal, $log) {
+    .controller('ClinicsCtrl', function($scope, $state, $http, $modal, $log) {
 
-  	$scope.selected = '';
+    // Controller configs
+    $scope.config = {
+        'new': 'Add Clinic',
+        'modify': 'Modify Clinic',
+        'modalSize': 'sm',
+        'templateUrl': 'clinic.html',
+        'controller': 'ModalClinicCtrl',
+        'endPoint': '/admin/clinic/',
+        'endPointCountry': '/admin/country/'
+    }
 
+    // Store the selected model to update
+    $scope.selected = '';
+
+    // Set the state of navigation    
     $scope.$state = $state;
 
-    $http.get('/admin/clinic').success(function(data, status, headers, config) {
-    	$scope.clinics = data;
-    });
+    // Loads/Reloads county list
+    $scope.reloadClinicList = function() {
+        $http.get($scope.config.endPoint).success(function(data, status, headers, config) {
+            // Bind countries to return value    
+            $scope.clinics = data;
+        });
+    }
 
+    // Loads/Reloads county list
+    $scope.reloadCountryList = function() {
+        $http.get( $scope.config.endPointCountry ).success(function(data, status, headers, config) {
+            // Bind countries to return value    
+            $scope.countries = data;
+        });
+    } 
+
+    // Brings up modal to modify clinic information
     $scope.modify = function(clinic) {
-    	console.log(clinic);
-    	var modalClinic = $modal.open({
-	      animation: $scope.animationsEnabled,
-	      templateUrl: 'clinic.html',
-	      controller: 'ModalClinicCtrl',
-	      resolve: {
-	        clinic: function () {
-	          return clinic
-	        }
-	      }
-	    });
-
-	    modalClinic.result.then(function (selectedItem) {
-	      //$scope.selected = selectedItem;
-	      $scope.clinics.push(selectedItem);
-	      	
-	    }, function () {
-	      $log.info('Modal dismissed at: ' + new Date());
-	    });
+        $scope.openModal(clinic, $scope.config.modify);
     }
 
-
-
+    // Brings up modal to insert new clinic
     $scope.new = function() {
-    	var modalClinic = $modal.open({
-	      animation: $scope.animationsEnabled,
-	      templateUrl: 'clinic.html',
-	      controller: 'ModalClinicCtrl',
-	      resolve: {
-	        clinic: function () {
-	         	return '';
-	        }
-	      }
-	    });
-
-	    modalClinic.result.then(function (selectedItem) {
-	      //$scope.selected = selectedItem;
-	      $scope.clinics.push(selectedItem);
-	      	
-	    }, function () {
-	      $log.info('Modal dismissed at: ' + new Date());
-	    });
+        $scope.openModal('', $scope.config.new);
     }
 
-  });
+    // Delete a clinic
+    $scope.delete = function(clinic) {
+        var url = $scope.config.endPoint;
+        url += clinic.clinic_id + '/';
 
-  angular.module('yapp').controller('ModalClinicCtrl', function ($scope, $modalInstance, $http, clinic) {
+        // Ajax call to post to clinic information
+        $http({
+                url: url,
+                method: "DELETE",
+                data: {} // nada here
+            })
+            .then(function(response) {
+                    if (response.data.status != 'fail') {
+                        // Reload clinic list on success
+                        $scope.reloadClinicList();
+                    } else {
+                        // Alert user on any errors
+                        alert(response.data.message);
+                    }
+                },
+                function(response) { // optional
+                    // Inserting/Updating has failed, alert user
+                    alert('Failed to delete clinic: ' + clinic.name);
+                });
+    }
 
-  	$scope.selected = clinic;
-  	console.log(clinic);
+    // Open the modal
+    $scope.openModal = function(clinic, action) {
+        // Initialise ui-bootstrap model on modify() event
+        var modalClinic = $modal.open({
+            animation: $scope.animationsEnabled,
+            templateUrl: $scope.config.templateUrl, // the html template to parse selected clinic
+            controller: $scope.config.controller, // the controller to handle selected clinic
+            size: $scope.config.modalSize, // size of modal
+            resolve: {
+                clinic: function() {
+                    return clinic;
+                },
+                action: function() {
+                    return action;
+                },
+                config: function() {
+                    return $scope.config;
+                },
+                countries: function() {
+                    return $scope.countries;
+                }
+            }
+        });
 
-  $scope.ok = function () {
-  	$http({
-        url: '/admin/clinic/',
-        method: "POST",
-        data: { 'clinic' : $scope.selected }
-    })
-    .then(function(response) {
-    	if(response.data.message != '') {
-    		alert(response.data.message);
-    	} else {
-    		$scope.selected.clinic_id = response.data.clinic_id;
-    		$modalInstance.close($scope.selected);
-    	}
-    }, 
-    function(response) { // optional
-            // failed
-	});
-   	//$modalInstance.close($scope.selected);
-  };
+        // Bind callback functions for save/cancel button
+        modalClinic.result.then(function(selectedItem) {
+            // Reload clinic list on success
+            $scope.reloadClinicList();
+        }, function() {
+            // Log messaging for debug purpose
+            $log.info('Modal dismissed at: ' + new Date());
+        });
+    }
 
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
+    // Load initial list
+    $scope.reloadClinicList();
+    $scope.reloadCountryList();
+});
+
+angular.module('yapp')
+    .controller('ModalClinicCtrl', function($scope, $modalInstance, $http, clinic, action, config, countries) {
+
+    // Update action description
+    $scope.action = action;
+
+    // Set selected clinic to modal passed through
+    $scope.selected = clinic;
+
+    // Set countries to modal passed through
+    $scope.countries = countries;
+
+    // Event for inserting/updating a clinic
+    $scope.ok = function() {
+        var url = config.endPoint;
+        if (clinic.hasOwnProperty('clinic_id')) {
+            url += clinic.clinic_id + '/';
+        }
+
+        // Ajax call to post to clinic information
+        $http({
+            url: url,
+            method: "POST",
+            data: {
+                'clinic': $scope.selected
+            }
+        })
+        .then(function(response) {
+            if (response.data.status != 'fail') {
+                // Close modal on success
+                $modalInstance.close();
+            } else {
+                // Alert user on any errors
+                alert(response.data.message);
+            }
+        },
+        function(response) { // optional
+            // Inserting/Updating has failed, alert user
+            alert('Failed to insert/update clinic');
+        });
+    };
+
+    // Event to dismiss modal
+    $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+    };
 });
