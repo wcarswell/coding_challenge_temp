@@ -48,11 +48,25 @@ angular
             templateUrl: '/public/admin/views/admin/countries.html',
             controller: 'CountriesCtrl'
           })
+           .state('clinics', {
+            url: '/clinics',
+            parent: 'dashboard',
+            templateUrl: '/public/admin/views/admin/clinics.html',
+            controller: 'ClinicsCtrl'
+          })
           .state('reports', {
             url: '/reports',
             parent: 'dashboard',
             templateUrl: '/public/admin/views/dashboard/reports.html'
           })
+          .state('product', {
+            url: '/product',
+            parent: 'dashboard',
+            templateUrl: '/public/admin/views/reports/product.html',
+            controller: 'ProductsCtrl'
+          })
+
+          
           .state('branch', {
             url: '/branch',
             parent: 'dashboard',

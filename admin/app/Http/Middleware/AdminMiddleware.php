@@ -7,7 +7,9 @@ class AdminMiddleware
 
     private $canManage = array(
         'country',
-        'savecountry'
+        'savecountry',
+        'clinic',
+        'product'
     );
     /**
      * Run the request filter.

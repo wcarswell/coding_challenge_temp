@@ -11,23 +11,73 @@
 |
 */
 
-// Middleware config to ensure only certain urls are allowed to be used
+/*
+|--------------------------------------------------------------------------
+| Middleware routes
+|--------------------------------------------------------------------------
+|
+| Middleware config to ensure only certain urls are allowed to be used
+|
+*/
 $app->routeMiddleware([
     'canManage' => 'App\Http\Middleware\AdminMiddleware'
 ]);
 
-// Home controller to load dashboard
+/*
+|--------------------------------------------------------------------------
+| Default route
+|--------------------------------------------------------------------------
+*/
 $app->get('/', [
     'as' => 'default', 'uses' => 'App\Http\Controllers\DashboardController@index'
 ]);
 
-// Country controller
+/*
+|--------------------------------------------------------------------------
+| Country routes
+|--------------------------------------------------------------------------
+*/
+
+// Get list of countries
 $app->get('/admin/country', [
 	'middleware' => 'canManage',
-    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@countrylist'
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@countryList'
 ]);
 
+// Insert new country
 $app->post('/admin/country', [
 	'middleware' => 'canManage',
-    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@insertCountry'
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@addCountry'
+]);
+
+// Modify country
+$app->post('/admin/country/{country_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@updateCountry'
+]);
+
+// Delete country
+$app->delete('/admin/country/{country_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteCountry'
+]);
+/*
+|--------------------------------------------------------------------------
+| Clinic routes
+|--------------------------------------------------------------------------
+*/
+
+$app->get('/admin/clinic', [
+	'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@cliniclist'
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Product routes
+|--------------------------------------------------------------------------
+*/
+$app->get('/reports/product', [
+	'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@products'
 ]);

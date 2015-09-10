@@ -1,0 +1,64 @@
+<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+
+<div>
+    <a ui-sref="admin" class="pull-right btn btn-primary btn-outline btn-rounded">Admin</a>
+    <h2>Clinic List</h2>
+    <div class="jumbotron">
+        <!-- Display error message -->
+        <p ng-show="message != ''">{{message}}</p>
+
+        <button class="pull-right btn btn-primary btn-outline btn-rounded" ng-click="new()">New</button>
+
+        <!-- Only show table if we received data -->
+        <table class="table table-striped" ng-show="clinics.length > 0">
+            <tr>
+                <th>Clinic</th>
+                <th>Street</th>
+                <th>City</th>
+                <th>Province</th>
+                <th>Post Code</th>
+                <th>Telephone Number</th>
+                <th>Fax Number</th>
+                <th>Clinic Number</th>
+                <th>Country</th>
+                <th>Action</th>
+            </tr>
+            <tr ng-repeat="clinic in clinics track by $index">
+                <td>{{clinic.name}}</td>
+                <td>{{clinic.street}}</td>
+                <td>{{clinic.city}}</td>
+                <td>{{clinic.province}}</td>
+                <td>{{clinic.post_code}}</td>
+                <td>{{clinic.telephone_number}}</td>
+                <td>{{clinic.fax_number}}</td>
+                <td>{{clinic.clinic_number}}</td>
+                <td>{{clinic.country_name}}</td>
+                <td>
+                  <button class="btn btn-primary" ng-click="modify(clinic)">Modify</button>
+                  <button class="btn btn-danger" ng-click="delete(clinic)">Delete</button></td>
+            </tr>
+        </table>
+
+            <script type="text/ng-template" id="clinic.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Add clinic</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                      <label>Country Name:</label>
+                      <input type="text" ng-model="selected.name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label>Currency:</label>
+                      <input type="text" ng-model="selected.country_name" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+                    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                </div>
+            </script>
+
+         
+    </div>
+</div>

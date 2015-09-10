@@ -21,7 +21,9 @@
 
     <!-- Application content -->
     <div class="">
+    
       <div ui-view></div>
+      
     </div>
 
     <script src="/public/admin/js/vendor.js"></script>
@@ -32,6 +34,8 @@
     <script src="/public/admin/js/controllers/login.js"></script>
     <script src="/public/admin/js/controllers/dashboard.js"></script>
     <script src="/public/admin/js/controllers/countries.js"></script>
+    <script src="/public/admin/js/controllers/clinics.js"></script>
+    <script src="/public/admin/js/controllers/products.js"></script>
     <!-- endbuild -->
   </body>
 </html>
