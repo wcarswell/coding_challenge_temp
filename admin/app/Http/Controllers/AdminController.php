@@ -80,23 +80,28 @@ class AdminController extends Controller
         // Modify entry
         if( !empty($order['vendor_id']) && !empty($order['tax_id']) ) {
             
+            // Initalise items_received and is_paid if not set
             if(!isset($order['items_received'])) $order['items_received'] = 'n';
             if(!isset($order['is_paid'])) $order['is_paid'] = 'n';
 
+            // Set items_received to y if set
             if(1 == $order['items_received']) {
                 $order['items_received'] = 'y';
             }
 
+            // Set is_paid to y if set
             if(1 == $order['is_paid']) {
                 $order['is_paid'] = 'y';
             }
 
+            // Update stock order
             StockOrder::where('stock_order_id', $order_id)
-                        ->update(['vendor_id' => $order['vendor_id'], 
-                            'tax_id'         => $order['tax_id'],
-                            'items_received' => $order['items_received'],
-                            'is_paid'        => $order['is_paid']
-                        ]);
+                ->update([
+                    'vendor_id' => $order['vendor_id'], 
+                    'tax_id'         => $order['tax_id'],
+                    'items_received' => $order['items_received'],
+                    'is_paid'        => $order['is_paid']
+                ]);
 
         } else {
             $return = array(
