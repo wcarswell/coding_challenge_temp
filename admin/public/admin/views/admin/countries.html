@@ -1,3 +1,4 @@
+<!-- Alert information -->
 <alert type="danger" close="closeAlert()" ng-show="alerts.length > 0">
     <span ng-repeat="alert in alerts">{{alert.msg}}<br /></span>
 </alert>
@@ -8,7 +9,7 @@
 <h2>Country List</h2>
 
 <div class="jumbotron">
-    <!-- Insert new country -->
+    <!-- Insert new country entry -->
     <button class="pull-right btn btn-primary btn-outline btn-rounded" ng-click="new()">+</button>
 
     <!-- Only show if we received data -->

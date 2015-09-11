@@ -1,9 +1,13 @@
+<!-- Alert information -->
 <alert type="danger" close="closeAlert()" ng-show="alerts.length > 0">
     <span ng-repeat="alert in alerts">{{alert.msg}}<br /></span>
 </alert>
 
+<!-- Take user to order stock list --> 
 <a ui-sref="order" class="pull-right btn btn-primary btn-outline btn-rounded">Order Stock</a>
+<!-- Take user back to admin list --> 
 <a ui-sref="admin" class="pull-right btn btn-primary btn-outline btn-rounded">Admin</a>
+
 <h2>Product List</h2>
 
 <div class="jumbotron">
