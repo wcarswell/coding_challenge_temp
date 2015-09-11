@@ -71,6 +71,66 @@ class AdminController extends Controller
         return $product->scopeProductByClinicID($clinic_id);
     }
 
+    public function updateOrder($order_id, Request $request)
+    {
+        // Fetch Posted country variables
+        $order = $request->input('order');
+        $orderLines = $request->input('orderlines');
+
+        // Modify entry
+        if( !empty($order['vendor_id']) && !empty($order['tax_id']) ) {
+            StockOrder::where('stock_order_id', $order_id)
+                        ->update(['vendor_id' => $order['vendor_id'], 
+                            'tax_id'         => $order['tax_id'],
+                            'items_received' => @($order['items_received']) ? 'y' : 'n',
+                            'is_paid'        => @($order['is_paid']) ? 'y' : 'n'
+                        ]);
+
+        } else {
+            $return = array(
+                'status' => 'fail',
+                'message' => 'Vendor or Tax value not set'
+            );
+        } 
+
+        // Save OrderLines
+        if($orderLines) {
+            foreach($orderLines as $orderLine) {
+                $stockOrderLine = new StockOrderLine(
+                    array(
+                        'product_id'     => $orderLine['product_id'],
+                        'stock_order_id' => $order_id,
+                        'quantity'       => $orderLine['quantity_on_hand']
+                    )
+                );
+
+                // Save new stock order line
+                $stockOrderLine->save();
+
+                // Amend product with new quantity on hand
+                if(isset($order['items_received'])) {
+                    if($order['items_received']) {
+                        // Find product to update
+                        $product = Product::find($orderLine['product_id']);
+
+                        if(empty($product->quantity_on_hand)) {
+                            $product->quantity_on_hand = 0;
+                        }
+
+                        $product->quantity_on_hand += $orderLine['quantity_on_hand'];
+                        
+                        $product->save();
+                    }
+                }
+
+            }
+        }
+
+        $return = array(
+            'status' => 'succcess'
+        );
+    }
+
     public function addOrder(Request $request)
     {
         // Fetch Posted country variables
@@ -80,8 +140,10 @@ class AdminController extends Controller
         // Initialise country object
         $stockOrder = new StockOrder(
             array(
-                'vendor_id' => $order['vendor_id'],
-                'tax_id' => $order['tax_id']
+                'vendor_id'      => $order['vendor_id'],
+                'tax_id'         => $order['tax_id'],
+                //'items_received' => @($order['items_received']) ? 'y' : 'n',
+                'is_paid'        => @($order['is_paid']) ? 'y' : 'n'
             )
         );
 
@@ -101,6 +163,22 @@ class AdminController extends Controller
 
                 // Save new stock order line
                 $stockOrderLine->save();
+
+                // Amend product with new quantity on hand
+                if(isset($order['items_received'])) {
+                    if($order['items_received']) {
+                        // Find product to update
+                        $product = Product::find($orderLine['product_id']);
+
+                        if(empty($product->quantity_on_hand)) {
+                            $product->quantity_on_hand = 0;
+                        }
+
+                        $product->quantity_on_hand += $orderLine['quantity_on_hand'];
+                        
+                        $product->save();
+                    }
+                }
             }
         }
 
@@ -519,10 +597,25 @@ class AdminController extends Controller
         // @Todo: save into temp table
         DB::table('stock_order')->where('stock_order_id', $order_id)->delete();
 
-        // Clean Stock Order Line
-
         $return = array(
             'status' => 'succcess'
         );
+    }
+
+    public function deleteOrderLine($order_id)
+    {
+        // Do we have a valid table key?
+        if(!is_numeric($order_id)) {
+            return response()->json(
+                array('status' => 'fail','message' => 'ID not numeric')
+            );
+        }
+        
+        // @Todo: save into temp table
+        DB::table('stock_order_line')->where('stock_order_id', $order_id)->delete();
+
+        $return = array(
+            'status' => 'succcess'
+        ); 
     }
 }

@@ -107,15 +107,21 @@ $app->post('/admin/orders', [
 ]);
 
 // Modify tax
-$app->post('/admin/orders/{tax_id}', [
+$app->post('/admin/orders/{order_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@updateOrder'
+]);
+
+// Delete tax
+$app->delete('/admin/orders/{order_id}', [
     'middleware' => 'canManage',
     'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteOrder'
 ]);
 
 // Delete tax
-$app->delete('/admin/orders/{tax_id}', [
+$app->delete('/admin/orders_line/{order_id}', [
     'middleware' => 'canManage',
-    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteOrder'
+    'as' => 'default', 'uses' => 'App\Http\Controllers\AdminController@deleteOrderLine'
 ]);
 
 /*

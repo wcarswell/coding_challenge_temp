@@ -22,7 +22,8 @@ angular.module('yapp')
         'endPointTax': '/admin/tax_with_currency/',
         'endPointProduct': '/admin/tax_with_currency/',
         'endPointClinic': '/admin/clinic',
-        'endPointClinicProduct': '/admin/product_by_clinic_id/'
+        'endPointClinicProduct': '/admin/product_by_clinic_id/',
+        'endPointOrderLine': '/admin/orders_line/'
     }
 
     // Store the selected model to update
@@ -61,10 +62,10 @@ angular.module('yapp')
         });
     }  
 
-    // // Brings up modal to modify clinic information
-    // $scope.modify = function(clinic) {
-    //     $scope.openModal(clinic, $scope.config.modify);
-    // }
+    // Brings up modal to modify clinic information
+    $scope.modify = function(order) {
+        $scope.openModal(order, $scope.config.modify);
+    }
 
     // Brings up modal to insert new clinic
     $scope.new = function() {
@@ -133,6 +134,7 @@ angular.module('yapp')
             $scope.reloadOrdersList();
         }, function() {
             // Log messaging for debug purpose
+            $scope.reloadOrdersList();
             $log.info('Modal dismissed at: ' + new Date());
         });
     }
@@ -152,9 +154,13 @@ angular.module('yapp')
 
     // Set selected order to modal passed through
     $scope.selected = order;
+    console.log(order);
 
-    //
+    // Set orders line to modal passed through
     $scope.ordersLines = [];
+
+    // Set current order line
+    $scope.currentOrderLine = order.orderLines;
 
     // Set countries to modal passed through
     $scope.vendors = vendors;
@@ -175,6 +181,33 @@ angular.module('yapp')
         ordersLines.splice(index,1);
     }
 
+    // Event to cancel complete order line
+    $scope.removeAllOrderLine = function(index, ordersLines)
+    {   
+        var url = config.endPointOrderLine;
+        url += order.stock_order_id + '/';
+
+        // Ajax call to post to clinic information
+        $http({
+            url: url,
+            method: "DELETE",
+            data: {} // nada here
+        })
+        .then(function(response) {
+            if (response.data.status != 'fail') {
+                // Reload tax list on success
+                $scope.currentOrderLine = [];
+            } else {
+                // Alert user on any errors
+                alert(response.data.message);
+            }
+        },
+        function(response) { // optional
+            // Inserting/Updating has failed, alert user
+            alert('Failed to delete orderline');
+        });
+    }
+
     // Event for fetching available products for Clinic
     $scope.getProductsByClinic = function(clinic_id, index, ordersLines)
     {   
@@ -190,9 +223,9 @@ angular.module('yapp')
     // Event for inserting/updating a clinic
     $scope.ok = function() {
         var url = config.endPoint;
-        // if (order.hasOwnProperty('order_id')) {
-        //     url += order.order_id + '/';
-        // }
+        if (order.hasOwnProperty('stock_order_id')) {
+            url += order.stock_order_id + '/';
+        }
         console.log( $scope.ordersLines);
         // // Ajax call to post to clinic information
         $http({
