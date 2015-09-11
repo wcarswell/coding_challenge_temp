@@ -132,6 +132,7 @@ angular.module('yapp')
         modalOrder.result.then(function(selectedItem) {
             // Reload clinic list on success
             $scope.reloadOrdersList();
+            $scope.reloadLowStockAlert();
         }, function() {
             // Log messaging for debug purpose
             $scope.reloadOrdersList();

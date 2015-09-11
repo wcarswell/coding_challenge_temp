@@ -12,13 +12,20 @@ class Product extends Model {
     ];
 
     /**
-     * Scope a query to return all products sortec by clinic.
+     * Scope a query to only include low stock levels.
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeProductByClinic()
+    public function scopeAll()
     {
-
+        return \DB::table('product')
+                    ->orderBy('country_name', 'asc')
+                    ->orderBy('clinic_name', 'asc')
+                    ->orderBy('name', 'asc')
+                    ->join('clinic', 'clinic.clinic_id', '=', 'product.clinic_id')
+                    ->join('country', 'country.country_id', '=', 'clinic.country_id')
+                    ->select('product.*', 'clinic.name as clinic_name', 'country.name as country_name')
+                    ->get();
     }
 
     /**

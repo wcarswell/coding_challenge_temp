@@ -89,10 +89,11 @@ angular
             templateUrl: '/public/admin/views/reports/low_stock.html',
             controller: 'LowStockCtrl'
           })
-          .state('branch', {
-            url: '/branch',
+          .state('product', {
+            url: '/product',
             parent: 'dashboard',
-            templateUrl: '/public/admin/views/dashboard/branch.html'
+            templateUrl: '/public/admin/views/reports/product.html',
+            controller: 'ProductsCtrl'
           });
 
   });

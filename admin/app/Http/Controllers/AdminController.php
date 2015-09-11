@@ -79,11 +79,23 @@ class AdminController extends Controller
 
         // Modify entry
         if( !empty($order['vendor_id']) && !empty($order['tax_id']) ) {
+            
+            if(!isset($order['items_received'])) $order['items_received'] = 'n';
+            if(!isset($order['is_paid'])) $order['is_paid'] = 'n';
+
+            if(1 == $order['items_received']) {
+                $order['items_received'] = 'y';
+            }
+
+            if(1 == $order['is_paid']) {
+                $order['is_paid'] = 'y';
+            }
+
             StockOrder::where('stock_order_id', $order_id)
                         ->update(['vendor_id' => $order['vendor_id'], 
                             'tax_id'         => $order['tax_id'],
-                            'items_received' => @($order['items_received']) ? 'y' : 'n',
-                            'is_paid'        => @($order['is_paid']) ? 'y' : 'n'
+                            'items_received' => $order['items_received'],
+                            'is_paid'        => $order['is_paid']
                         ]);
 
         } else {
@@ -138,12 +150,23 @@ class AdminController extends Controller
         $orderLines = $request->input('orderlines');
 
         // Initialise country object
+        if(!isset($order['items_received'])) $order['items_received'] = 'n';
+        if(!isset($order['is_paid'])) $order['is_paid'] = 'n';
+
+        if(1 == $order['items_received']) {
+            $order['items_received'] = 'y';
+        }
+
+        if(1 == $order['is_paid']) {
+            $order['is_paid'] = 'y';
+        }
+
         $stockOrder = new StockOrder(
             array(
                 'vendor_id'      => $order['vendor_id'],
                 'tax_id'         => $order['tax_id'],
-                //'items_received' => @($order['items_received']) ? 'y' : 'n',
-                'is_paid'        => @($order['is_paid']) ? 'y' : 'n'
+                'items_received' => $order['items_received'],
+                'is_paid'        => $order['is_paid']
             )
         );
 

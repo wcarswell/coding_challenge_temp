@@ -1,4 +1,7 @@
-<!-- <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert> -->
+<alert type="danger" close="closeAlert()" ng-show="alerts.length > 0">
+    <span ng-repeat="alert in alerts">{{alert.msg}}<br /></span>
+</alert>
+
 <a ui-sref="admin" class="pull-right btn btn-primary btn-outline btn-rounded">Admin</a>
 
 <h2>Stock Levels</h2>

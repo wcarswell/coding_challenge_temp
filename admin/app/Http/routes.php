@@ -134,6 +134,26 @@ $app->get('/reports/low_stock', [
     'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@lowStock'
 ]);
 
+$app->get('/reports/product', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@productList'
+]);
+
+$app->post('/reports/product', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@addProduct'
+]);
+
+$app->post('/reports/product/{product_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@updateProduct'
+]);
+
+$app->delete('/reports/product/{product_id}', [
+    'middleware' => 'canManage',
+    'as' => 'default', 'uses' => 'App\Http\Controllers\ReportController@deleteProduct'
+]);
+
 /*
 |--------------------------------------------------------------------------
 | Tax routes

@@ -1,32 +1,64 @@
-<div>
-    <a ui-sref="admin" class="pull-right btn btn-primary btn-outline btn-rounded">Admin</a>
-    <h2>Clinic List</h2>
-    <div class="jumbotron">
-        <!-- Display error message -->
-        <p ng-show="message != ''">{{message}}</p>
+<alert type="danger" close="closeAlert()" ng-show="alerts.length > 0">
+    <span ng-repeat="alert in alerts">{{alert.msg}}<br /></span>
+</alert>
 
-        <button class="pull-right btn btn-primary btn-outline btn-rounded" ng-click="new()">New</button>
+<a ui-sref="order" class="pull-right btn btn-primary btn-outline btn-rounded">Order Stock</a>
+<a ui-sref="admin" class="pull-right btn btn-primary btn-outline btn-rounded">Admin</a>
+<h2>Product List</h2>
 
-        <!-- Only show table if we received data -->
-        <table class="table table-striped" ng-show="products.length > 0">
-            <tr>
-                <th>Type</th>
-                <th>Name</th>
-                <th>#</th>
-                <th>Clinic</th>
-                <th>Action</th>
-            </tr>
-            <tr ng-repeat="product in products track by $index">
-                <td>{{product.type}}</td>
-                <td>{{product.name}}</td>
-                <td>{{product.quantity_on_hand}}</td>
-                <td>{{product.clinic_id}}</td>
-                <td>
-                  <button class="btn btn-primary" ng-click="modify(product)">Modify</button>
-                  <button class="btn btn-danger" ng-click="delete(product)">Delete</button></td>
-            </tr>
-        </table>
+<div class="jumbotron">
+    <button class="pull-right btn btn-primary btn-outline btn-rounded" ng-click="new()">+</button>
 
-         
-    </div>
+    <!-- Only show table if we received data -->
+    <table class="table table-striped" ng-show="products.length > 0">
+        <tr>
+            <!-- <th>Type</th> -->
+            <th>Name</th>
+            <th>#</th>
+            <th>Clinic</th>
+            <th>Action</th>
+        </tr>
+        <tr ng-repeat="product in products track by $index">
+            <!-- <td>{{product.type}}</td> -->
+            <td>{{product.name}}</td>
+            <td>{{product.quantity_on_hand}}</td>
+            <td>{{product.clinic_name}}</td>
+            <td>
+              <button class="btn btn-primary" ng-click="modify(product)">Modify</button>
+              <button class="btn btn-danger" ng-click="delete(product)">Delete</button></td>
+        </tr>
+    </table>
+
+    <!-- Template script to add/modify Product -->
+    <script type="text/ng-template" id="product.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{ action }}</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Product Name:</label>
+                <input type="text" ng-model="selected.name" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Quantity On Hand:</label>
+                <input type="text" ng-model="selected.quantity_on_hand" class="form-control">
+            </div>
+            <div class="form-group">
+                <div ng-if="selected.product_id>0">
+                    Client: {{ selected.clinic_name }}
+                </div>
+
+                <div ng-if="!selected.product_id">
+                    <label>Clinic:</label>
+                    
+                    <select ng-model="selected.clinic_id" ng-options="clinic.clinic_id as clinic.name for clinic in clinics">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
 </div>
