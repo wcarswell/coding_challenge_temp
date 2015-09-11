@@ -2,9 +2,9 @@
 
 /**
  * @ngdoc function
- * @name yapp.controller:MainCtrl
+ * @name yapp.controller:ProductsCtrl
  * @description
- * # MainCtrl
+ * # ProductsCtrl
  * Controller of yapp
  */
 angular.module('yapp')
@@ -12,13 +12,13 @@ angular.module('yapp')
 
 	    // Controller configs
     $scope.config = {
-        'new': 'Add Product Per Clinic',
-        'modify': 'Modify Product',
-        'modalSize': 'sm',
-        'templateUrl': 'product.html',
-        'controller': 'ModalProductCtrl',
-        'endPoint': '/reports/product/',
-        'endPointClinic': '/admin/clinic/'
+        'new': 'Add Product Per Clinic', // modal new description
+        'modify': 'Modify Product', // modal modify description
+        'modalSize': 'sm', // modal size
+        'templateUrl': 'product.html', // template view to parse modal scope
+        'controller': 'ModalProductCtrl', // modal controller
+        'endPoint': '/reports/product/',  // endpoint for product
+        'endPointClinic': '/admin/clinic/' // endpoint for clinic
     }
 
     // Store the selected model to update
@@ -27,38 +27,38 @@ angular.module('yapp')
     // Set the state of navigation    
     $scope.$state = $state;
 
-    // Loads/Reloads county list
+    // Loads/Reloads product list
     $scope.reloadProductList = function() {
         $http.get($scope.config.endPoint).success(function(data, status, headers, config) {
-            // Bind tax to return value    
+            // Bind product to return value    
             $scope.products = data;
         });
     }
 
-    // Loads/Reloads county list
+    // Loads/Reloads clinic list
     $scope.reloadClinicList = function() {
         $http.get( $scope.config.endPointClinic ).success(function(data, status, headers, config) {
-            // Bind countries to return value    
+            // Bind clinics to return value    
             $scope.clinics = data;
         });
     } 
 
-    // Brings up modal to modify clinic information
+    // Brings up modal to modify product information
     $scope.modify = function(product) {
         $scope.openModal(product, $scope.config.modify);
     }
 
-    // Brings up modal to insert new clinic
+    // Brings up modal to insert new product
     $scope.new = function() {
         $scope.openModal('', $scope.config.new);
     }
 
-    // Delete a clinic
+    // Delete a product
     $scope.delete = function(product) {
         var url = $scope.config.endPoint;
         url += product.product_id + '/';
 
-        // Ajax call to post to clinic information
+        // Ajax call to post to product information
         $http({
             url: url,
             method: "DELETE",
@@ -87,7 +87,7 @@ angular.module('yapp')
             templateUrl: $scope.config.templateUrl, // the html template to parse selected clinic
             controller: $scope.config.controller, // the controller to handle selected clinic
             size: $scope.config.modalSize, // size of modal
-            resolve: {
+            resolve: { // send through dependencies to modal
                 product: function() {
                     return product;
                 },
@@ -105,7 +105,7 @@ angular.module('yapp')
 
         // Bind callback functions for save/cancel button
         modalProduct.result.then(function(selectedItem) {
-            // Reload clinic list on success
+            // Reload product list on success
             $scope.reloadProductList();
             $scope.reloadLowStockAlert();
         }, function() {
@@ -131,14 +131,16 @@ angular.module('yapp')
     // Set countries to modal passed through
     $scope.clinics = clinic;
 
-    // Event for inserting/updating a clinic
+    // Event for inserting/updating a product
     $scope.ok = function() {
         var url = config.endPoint;
+
+        // Add product_id if modifying
         if (product.hasOwnProperty('product_id')) {
             url += product.product_id + '/';
         }
 
-        // Ajax call to post to clinic information
+        // Ajax call to post to product information
         $http({
             url: url,
             method: "POST",

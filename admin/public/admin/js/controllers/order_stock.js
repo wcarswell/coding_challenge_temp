@@ -2,9 +2,9 @@
 
 /**
  * @ngdoc function
- * @name yapp.controller:CountriesCtrl
+ * @name yapp.controller:OrdersCtrl
  * @description
- * # CountriesCtrl
+ * # OrdersCtrl
  * Controller of yapp
  */
 angular.module('yapp')
@@ -12,18 +12,18 @@ angular.module('yapp')
 
     // Controller configs
     $scope.config = {
-        'new': 'Add Order',
-        'modify': 'Modify Order',
-        'modalSize': '',
-        'templateUrl': 'order.html',
-        'controller': 'ModalOrdersCtrl',
-        'endPoint': '/admin/orders/',
-        'endPointVendor': '/admin/vendor/',
-        'endPointTax': '/admin/tax_with_currency/',
-        'endPointProduct': '/admin/tax_with_currency/',
-        'endPointClinic': '/admin/clinic',
-        'endPointClinicProduct': '/admin/product_by_clinic_id/',
-        'endPointOrderLine': '/admin/orders_line/'
+        'new': 'Add Order', // modal new description
+        'modify': 'Modify Order', // modal modify description
+        'modalSize': '', // modal size
+        'templateUrl': 'order.html', // template view to parse modal scope
+        'quantity_on_hand': 5, // set minimum quantity purchase for temp order line
+        'controller': 'ModalOrdersCtrl', // modal controller
+        'endPoint': '/admin/orders/', // endpoint for orders
+        'endPointVendor': '/admin/vendor/', // endpoint for vendor
+        'endPointTax': '/admin/tax_with_currency/', // endpoint for tax
+        'endPointClinic': '/admin/clinic', // endpoint for clinic
+        'endPointClinicProduct': '/admin/product_by_clinic_id/', // endpoint for product clinic
+        'endPointOrderLine': '/admin/orders_line/' // endpoint for order line
     }
 
     // Store the selected model to update
@@ -32,7 +32,7 @@ angular.module('yapp')
     // Set the state of navigation    
     $scope.$state = $state;
 
-    // Loads/Reloads county list
+    // Loads/Reloads order list
     $scope.reloadOrdersList = function() {
         $http.get($scope.config.endPoint).success(function(data, status, headers, config) {
             // Bind countries to return value    
@@ -40,7 +40,7 @@ angular.module('yapp')
         });
     }
 
-    // Loads/Reloads county list
+    // Loads/Reloads vendor list
     $scope.reloadVendorsList = function() {
         $http.get( $scope.config.endPointVendor ).success(function(data, status, headers, config) {
             // Bind countries to return value    
@@ -48,6 +48,7 @@ angular.module('yapp')
         });
     } 
 
+    // Loads/Reloads tax list
     $scope.reloadTaxList = function() {
         $http.get( $scope.config.endPointTax ).success(function(data, status, headers, config) {
             // Bind countries to return value    
@@ -55,6 +56,7 @@ angular.module('yapp')
         });
     }
 
+    // Loads/Reloads clinic list
     $scope.reloadClinicList = function() {
         $http.get( $scope.config.endPointClinic ).success(function(data, status, headers, config) {
             // Bind countries to return value    
@@ -62,40 +64,40 @@ angular.module('yapp')
         });
     }  
 
-    // Brings up modal to modify clinic information
+    // Brings up modal to modify order information
     $scope.modify = function(order) {
         $scope.openModal(order, $scope.config.modify);
     }
 
-    // Brings up modal to insert new clinic
+    // Brings up modal to insert new order
     $scope.new = function() {
         $scope.openModal('', $scope.config.new);
     }
 
-    // Delete a clinic
+    // Delete a order
     $scope.delete = function(order) {
         var url = $scope.config.endPoint;
         url += order.stock_order_id + '/';
 
-        // Ajax call to post to clinic information
+        // Ajax call to post to order information
         $http({
             url: url,
             method: "DELETE",
             data: {} // nada here
         })
         .then(function(response) {
-                if (response.data.status != 'fail') {
-                    // Reload clinic list on success
-                    $scope.reloadOrdersList();
-                } else {
-                    // Alert user on any errors
-                    alert(response.data.message);
-                }
-            },
-            function(response) { // optional
-                // Inserting/Updating has failed, alert user
-                alert('Failed to delete order: ' + order.stock_order_id);
-            });
+            if (response.data.status != 'fail') {
+                // Reload order list on success
+                $scope.reloadOrdersList();
+            } else {
+                // Alert user on any errors
+                alert(response.data.message);
+            }
+        },
+        function(response) { // optional
+            // Inserting/Updating has failed, alert user
+            alert('Failed to delete order: ' + order.stock_order_id);
+        });
     }
 
     // Open the modal
@@ -106,7 +108,7 @@ angular.module('yapp')
             templateUrl: $scope.config.templateUrl, // the html template to parse selected clinic
             controller: $scope.config.controller, // the controller to handle selected clinic
             size: $scope.config.modalSize, // size of modal
-            resolve: {
+            resolve: { // send through dependencies to modal controller
                 order: function() {
                     return order;
                 },
@@ -130,7 +132,7 @@ angular.module('yapp')
 
         // Bind callback functions for save/cancel button
         modalOrder.result.then(function(selectedItem) {
-            // Reload clinic list on success
+            // Reload lists
             $scope.reloadOrdersList();
             $scope.reloadLowStockAlert();
         }, function() {
@@ -155,8 +157,7 @@ angular.module('yapp')
 
     // Set selected order to modal passed through
     $scope.selected = order;
-    console.log(order);
-
+    
     // Set orders line to modal passed through
     $scope.ordersLines = [];
 
@@ -172,7 +173,8 @@ angular.module('yapp')
     // Event for Order Line manipulation
     $scope.newOrderLine = function() 
     {
-        $scope.ordersLines.push({'quantity_on_hand': 5, 'clinics': clinic});
+        // Add new temp order line
+        $scope.ordersLines.push({'quantity_on_hand': config.quantity_on_hand, 'clinics': clinic});
     }
 
     // Event for removing order line
@@ -188,7 +190,7 @@ angular.module('yapp')
         var url = config.endPointOrderLine;
         url += order.stock_order_id + '/';
 
-        // Ajax call to post to clinic information
+        // Ajax call to post to order information
         $http({
             url: url,
             method: "DELETE",
@@ -221,9 +223,11 @@ angular.module('yapp')
         });
     }
 
-    // Event for inserting/updating a clinic
+    // Event for inserting/updating a order
     $scope.ok = function() {
         var url = config.endPoint;
+
+        // Add stock_order_id if modifying
         if (order.hasOwnProperty('stock_order_id')) {
             url += order.stock_order_id + '/';
         }
@@ -248,7 +252,7 @@ angular.module('yapp')
         },
         function(response) { // optional
             // Inserting/Updating has failed, alert user
-            alert('Failed to insert/update clinic');
+            alert('Failed to insert/update order');
         });
     };
 

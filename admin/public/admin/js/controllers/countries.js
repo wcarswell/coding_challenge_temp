@@ -12,12 +12,12 @@ angular.module('yapp')
 
     // Controller configs
     $scope.config = {
-    	'new' : 'Add Country',
-    	'modify' : 'Modify Country',
-    	'modalSize': 'sm',
-    	'templateUrl': 'country.html',
-    	'controller': 'ModalCountryCtrl',
-    	'endPoint': '/admin/country/'
+    	'new' : 'Add Country',  // modal new description
+    	'modify' : 'Modify Country', // modal modify description
+    	'modalSize': 'sm', // modal size
+    	'templateUrl': 'country.html', // template view to parse modal scope
+    	'controller': 'ModalCountryCtrl', // modal controller
+    	'endPoint': '/admin/country/' // endpoint for country
     }
 	
 	// Store the selected model to update
@@ -26,7 +26,7 @@ angular.module('yapp')
 	// Set the state of navigation		
 	$scope.$state = $state;
 	
-	// Loads/Reloads county list
+	// Loads/Reloads country list
 	$scope.reloadCountryList = function() {
 		$http.get( $scope.config.endPoint ).success(function(data, status, headers, config) {
 			// Bind countries to return value    
@@ -78,7 +78,7 @@ angular.module('yapp')
 			templateUrl: $scope.config.templateUrl, // the html template to parse selected country
 			controller:  $scope.config.controller, // the controller to handle selected country
 			size: $scope.config.modalSize, // size of modal
-			resolve: {
+			resolve: { // send through dependencies to modal
 				country: function() {
 					return country;
 				},
@@ -113,10 +113,12 @@ angular.module('yapp')
 		
 	// Set selected country to modal passed through
     $scope.selected = country;
-	console.log(config.endPoint);
+
 	// Event for inserting/updating a country
     $scope.ok = function() {
     	var url = config.endPoint;
+
+    	// Add country_id if modifying
     	if( country.hasOwnProperty('country_id') ) {
     		url += country.country_id + '/';
     	}

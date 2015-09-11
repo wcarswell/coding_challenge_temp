@@ -12,7 +12,7 @@ angular.module('yapp')
 
     // Controller configs
     $scope.config = {
-        'endPoint': '/reports/low_stock/'
+        'endPoint': '/reports/low_stock/' // endpoint of low stock
     }
 
     // Store the selected model to update
@@ -21,7 +21,7 @@ angular.module('yapp')
     // Set the state of navigation    
     $scope.$state = $state;
 
-    // Loads/Reloads county list
+    // Loads/Reloads low stock list
     $scope.reloadLowStockList = function() {
         $http.get($scope.config.endPoint).success(function(data, status, headers, config) {
             // Bind tax to return value    
@@ -31,5 +31,4 @@ angular.module('yapp')
 
     // Inital Load
     $scope.reloadLowStockList();
-
 });

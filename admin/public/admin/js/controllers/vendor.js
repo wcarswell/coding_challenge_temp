@@ -2,9 +2,9 @@
 
 /**
  * @ngdoc function
- * @name yapp.controller:CountriesCtrl
+ * @name yapp.controller:VendorCtrl
  * @description
- * # CountriesCtrl
+ * # VendorCtrl
  * Controller of yapp
  */
 angular.module('yapp')
@@ -12,12 +12,12 @@ angular.module('yapp')
 
     // Controller configs
     $scope.config = {
-        'new': 'Add Vendor',
-        'modify': 'Modify Vendor',
-        'modalSize': '',
-        'templateUrl': 'vendor.html',
-        'controller': 'ModalVendorCtrl',
-        'endPoint': '/admin/vendor/'
+        'new': 'Add Vendor', // modal new description
+        'modify': 'Modify Vendor', // modal modify description
+        'modalSize': '', // modal size
+        'templateUrl': 'vendor.html', // template view to parse modal scope
+        'controller': 'ModalVendorCtrl', // modal controller
+        'endPoint': '/admin/vendor/' // endpoint for vendor
     }
 
     // Store the selected model to update
@@ -26,7 +26,7 @@ angular.module('yapp')
     // Set the state of navigation    
     $scope.$state = $state;
 
-    // Loads/Reloads county list
+    // Loads/Reloads vendor list
     $scope.reloadVendorList = function() {
         $http.get($scope.config.endPoint).success(function(data, status, headers, config) {
             // Bind tax to return value    
@@ -49,7 +49,7 @@ angular.module('yapp')
         var url = $scope.config.endPoint;
         url += vendor.vendor_id + '/';
 
-        // Ajax call to post to clinic information
+        // Ajax call to post to vendor information
         $http({
             url: url,
             method: "DELETE",
@@ -78,7 +78,7 @@ angular.module('yapp')
             templateUrl: $scope.config.templateUrl, // the html template to parse selected clinic
             controller: $scope.config.controller, // the controller to handle selected clinic
             size: $scope.config.modalSize, // size of modal
-            resolve: {
+            resolve: { // send through dependencies to modal
                 vendor: function() {
                     return vendor;
                 },
@@ -93,7 +93,7 @@ angular.module('yapp')
 
         // Bind callback functions for save/cancel button
         modalVendor.result.then(function(selectedItem) {
-            // Reload clinic list on success
+            // Reload vendor list on success
             $scope.reloadVendorList();
         }, function() {
             // Log messaging for debug purpose
@@ -111,10 +111,10 @@ angular.module('yapp')
     // Update action description
     $scope.action = action;
 
-    // Set selected clinic to modal passed through
+    // Set selected vendor to modal passed through
     $scope.selected = vendor;
 
-    // Event for inserting/updating a clinic
+    // Event for inserting/updating a vendor
     $scope.ok = function() {
         
         var url = config.endPoint;
@@ -122,7 +122,7 @@ angular.module('yapp')
             url += vendor.vendor_id + '/';
         }
 
-        // Ajax call to post to clinic information
+        // Ajax call to post to vendor information
         $http({
             url: url,
             method: "POST",

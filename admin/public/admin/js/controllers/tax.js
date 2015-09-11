@@ -2,9 +2,9 @@
 
 /**
  * @ngdoc function
- * @name yapp.controller:CountriesCtrl
+ * @name yapp.controller:TaxCtrl
  * @description
- * # CountriesCtrl
+ * # TaxCtrl
  * Controller of yapp
  */
 angular.module('yapp')
@@ -12,13 +12,13 @@ angular.module('yapp')
 
     // Controller configs
     $scope.config = {
-        'new': 'Add Tax For Country',
-        'modify': 'Modify Tax Setup',
-        'modalSize': 'sm',
-        'templateUrl': 'tax.html',
-        'controller': 'ModalTaxCtrl',
-        'endPoint': '/admin/tax/',
-        'endPointCountry': '/admin/country/'
+        'new': 'Add Tax For Country', // modal new description
+        'modify': 'Modify Tax Setup', // modal modify description
+        'modalSize': 'sm', // modal size
+        'templateUrl': 'tax.html', // template view to parse modal scope
+        'controller': 'ModalTaxCtrl', // modal controller
+        'endPoint': '/admin/tax/', // endpoint for tax
+        'endPointCountry': '/admin/country/' // endpoint for country
     }
 
     // Store the selected model to update
@@ -27,7 +27,7 @@ angular.module('yapp')
     // Set the state of navigation    
     $scope.$state = $state;
 
-    // Loads/Reloads county list
+    // Loads/Reloads tax list
     $scope.reloadTaxList = function() {
         $http.get($scope.config.endPoint).success(function(data, status, headers, config) {
             // Bind tax to return value    
@@ -35,7 +35,7 @@ angular.module('yapp')
         });
     }
 
-    // Loads/Reloads county list
+    // Loads/Reloads country list
     $scope.reloadCountryList = function() {
         $http.get( $scope.config.endPointCountry ).success(function(data, status, headers, config) {
             // Bind countries to return value    
@@ -43,17 +43,17 @@ angular.module('yapp')
         });
     } 
 
-    // Brings up modal to modify clinic information
+    // Brings up modal to modify tax information
     $scope.modify = function(tax) {
         $scope.openModal(tax, $scope.config.modify);
     }
 
-    // Brings up modal to insert new clinic
+    // Brings up modal to insert new tax
     $scope.new = function() {
         $scope.openModal('', $scope.config.new);
     }
 
-    // Delete a clinic
+    // Delete a tax
     $scope.delete = function(tax) {
         var url = $scope.config.endPoint;
         url += tax.tax_id + '/';
@@ -65,18 +65,18 @@ angular.module('yapp')
             data: {} // nada here
         })
         .then(function(response) {
-                if (response.data.status != 'fail') {
-                    // Reload tax list on success
-                    $scope.reloadTaxList();
-                } else {
-                    // Alert user on any errors
-                    alert(response.data.message);
-                }
-            },
-            function(response) { // optional
-                // Inserting/Updating has failed, alert user
-                alert('Failed to delete Tax Setup: ' + tax.country_name);
-            });
+            if (response.data.status != 'fail') {
+                // Reload tax list on success
+                $scope.reloadTaxList();
+            } else {
+                // Alert user on any errors
+                alert(response.data.message);
+            }
+        },
+        function(response) { // optional
+            // Inserting/Updating has failed, alert user
+            alert('Failed to delete Tax Setup: ' + tax.country_name);
+        });
     }
 
     // Open the modal
@@ -87,7 +87,7 @@ angular.module('yapp')
             templateUrl: $scope.config.templateUrl, // the html template to parse selected clinic
             controller: $scope.config.controller, // the controller to handle selected clinic
             size: $scope.config.modalSize, // size of modal
-            resolve: {
+            resolve: { // send through dependencies to modal
                 tax: function() {
                     return tax;
                 },
@@ -105,7 +105,7 @@ angular.module('yapp')
 
         // Bind callback functions for save/cancel button
         modalTax.result.then(function(selectedItem) {
-            // Reload clinic list on success
+            // Reload tax list on success
             $scope.reloadTaxList();
         }, function() {
             // Log messaging for debug purpose
@@ -124,13 +124,13 @@ angular.module('yapp')
     // Update action description
     $scope.action = action;
 
-    // Set selected clinic to modal passed through
+    // Set selected tax to modal passed through
     $scope.selected = tax;
 
     // Set countries to modal passed through
     $scope.countries = countries;
 
-    // Event for inserting/updating a clinic
+    // Event for inserting/updating a tax
     $scope.ok = function() {
         // Validate input
         if($scope.selected.percent.length > 3 || $scope.selected.percent > 100) {
@@ -144,11 +144,13 @@ angular.module('yapp')
         }
         
         var url = config.endPoint;
+
+        // Add tax_id if modifying
         if (tax.hasOwnProperty('tax_id')) {
             url += tax.tax_id + '/';
         }
 
-        // Ajax call to post to clinic information
+        // Ajax call to post to tax information
         $http({
             url: url,
             method: "POST",

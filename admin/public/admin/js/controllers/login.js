@@ -2,19 +2,21 @@
 
 /**
  * @ngdoc function
- * @name yapp.controller:MainCtrl
+ * @name yapp.controller:LoginCtrl
  * @description
- * # MainCtrl
+ * # LoginCtrl
  * Controller of yapp
  */
 angular.module('yapp')
   .controller('LoginCtrl', function($scope, $location) {
 
-    $scope.submit = function() {
+  	// Submission of user login
+	$scope.submit = function() {
+		// MVP phase 1 - redirect to dashboard
+      	$location.path('/dashboard');
 
-      $location.path('/dashboard');
-
-      return false;
+      	// End script
+      	return false;
     }
 
-  });
+});

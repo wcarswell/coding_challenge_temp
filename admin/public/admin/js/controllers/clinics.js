@@ -2,9 +2,9 @@
 
 /**
  * @ngdoc function
- * @name yapp.controller:CountriesCtrl
+ * @name yapp.controller:ClinicsCtrl
  * @description
- * # CountriesCtrl
+ * # ClinicsCtrl
  * Controller of yapp
  */
 angular.module('yapp')
@@ -12,13 +12,13 @@ angular.module('yapp')
 
     // Controller configs
     $scope.config = {
-        'new': 'Add Clinic',
-        'modify': 'Modify Clinic',
-        'modalSize': 'sm',
-        'templateUrl': 'clinic.html',
-        'controller': 'ModalClinicCtrl',
-        'endPoint': '/admin/clinic/',
-        'endPointCountry': '/admin/country/'
+        'new': 'Add Clinic', // modal new description
+        'modify': 'Modify Clinic', // modal modify description
+        'modalSize': 'sm', // modal size
+        'templateUrl': 'clinic.html', // template view to parse modal scope
+        'controller': 'ModalClinicCtrl', // modal controller
+        'endPoint': '/admin/clinic/', // endpoint for clinic
+        'endPointCountry': '/admin/country/' // endpoint for country
     }
 
     // Store the selected model to update
@@ -27,7 +27,7 @@ angular.module('yapp')
     // Set the state of navigation    
     $scope.$state = $state;
 
-    // Loads/Reloads county list
+    // Loads/Reloads clinic list
     $scope.reloadClinicList = function() {
         $http.get($scope.config.endPoint).success(function(data, status, headers, config) {
             // Bind countries to return value    
@@ -35,7 +35,7 @@ angular.module('yapp')
         });
     }
 
-    // Loads/Reloads county list
+    // Loads/Reloads country list
     $scope.reloadCountryList = function() {
         $http.get( $scope.config.endPointCountry ).success(function(data, status, headers, config) {
             // Bind countries to return value    
@@ -56,27 +56,29 @@ angular.module('yapp')
     // Delete a clinic
     $scope.delete = function(clinic) {
         var url = $scope.config.endPoint;
+
+        // Add clinic_id if modifying
         url += clinic.clinic_id + '/';
 
         // Ajax call to post to clinic information
         $http({
-                url: url,
-                method: "DELETE",
-                data: {} // nada here
-            })
-            .then(function(response) {
-                    if (response.data.status != 'fail') {
-                        // Reload clinic list on success
-                        $scope.reloadClinicList();
-                    } else {
-                        // Alert user on any errors
-                        alert(response.data.message);
-                    }
-                },
-                function(response) { // optional
-                    // Inserting/Updating has failed, alert user
-                    alert('Failed to delete clinic: ' + clinic.name);
-                });
+            url: url,
+            method: "DELETE",
+            data: {} // nada here
+        })
+        .then(function(response) {
+            if (response.data.status != 'fail') {
+                // Reload clinic list on success
+                $scope.reloadClinicList();
+            } else {
+                // Alert user on any errors
+                alert(response.data.message);
+            }
+        },
+        function(response) { // optional
+            // Inserting/Updating has failed, alert user
+            alert('Failed to delete clinic: ' + clinic.name);
+        });
     }
 
     // Open the modal
@@ -87,7 +89,7 @@ angular.module('yapp')
             templateUrl: $scope.config.templateUrl, // the html template to parse selected clinic
             controller: $scope.config.controller, // the controller to handle selected clinic
             size: $scope.config.modalSize, // size of modal
-            resolve: {
+            resolve: { // send through dependencies to modal controller
                 clinic: function() {
                     return clinic;
                 },
@@ -133,6 +135,8 @@ angular.module('yapp')
     // Event for inserting/updating a clinic
     $scope.ok = function() {
         var url = config.endPoint;
+
+        // Add clinic_id if modifying
         if (clinic.hasOwnProperty('clinic_id')) {
             url += clinic.clinic_id + '/';
         }
